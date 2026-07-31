@@ -762,7 +762,7 @@
 	</main>
 	
 		<!-- Tag audio disembunyikan (tanpa atribut 'controls') -->
-<audio id="myAudio" src="7menit.mp3"></audio>
+<audio id="myAudio" src="7menit.mp3"loop></audio>
 
 <!-- Cuma wadah teks liriknya aja yang kelihatan di layar -->
 <div class="music-player-container">
@@ -776,17 +776,16 @@
 
     <script>
 		// 1. Inisialisasi Audio
-        var bgMusic = new Audio('https://raw.githubusercontent.com/xyfinzz/Xyfinz/main/7menit.mp3');
-        bgMusic.loop = true;
+        var myAudio = document.getElementById('myAudio');
 
         // 2. Play
         document.addEventListener('click', function() {
-            if (bgMusic.paused) {
-                bgMusic.play().catch(function(error) {
-                    console.log("Autoplay ditolak browser:", error);
-                });
-            }
-        }, { once: true });
+  if (myAudio && myAudio.paused) {
+    myAudio.play().catch(function(error) {
+      console.log("Autoplay ditolak browser:", error);
+    });
+  }
+}, { once: true });
 
         // Logika Switch
         function toggleTheme() {
