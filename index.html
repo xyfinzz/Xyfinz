@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Tebak Santai - Xyfinz</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}body{background-color:#0b0c10;color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;position:relative;overflow:hidden}.stars-bg{position:fixed;top:0;left:0;width:2px;height:2px;background:transparent;box-shadow:10vw 15vh #fff,25vw 35vh #fff,40vw 10vh #fff,55vw 80vh #fff,70vw 25vh #fff,85vw 60vh #fff,15vw 70vh #fff,30vw 90vh #fff,45vw 50vh #fff,60vw 15vh #fff,75vw 85vh #fff,90vw 30vh #fff,5vw 45vh #fff,20vw 85vh #fff,35vw 20vh #fff,50vw 65vh #fff,65vw 40vh #fff,80vw 95vh #fff,12vw 25vh #fff,28vw 60vh #fff,48vw 30vh #fff,68vw 75vh #fff,88vw 10vh #fff,95vw 50vh #fff;animation:smoothTwinkle 3s infinite alternate ease-in-out;pointer-events:none;z-index:0}@keyframes smoothTwinkle{0%{opacity:.2}100%{opacity:.8}}.quiz-card{background:#1f2833;border:2px solid #45a29e;border-radius:16px;padding:24px;width:100%;max-width:450px;box-shadow:0 0 15px rgba(69,162,158,.3);text-align:center;position:relative;z-index:1}.shake{animation:shake .4s ease-in-out}@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}.quiz-header{font-size:1.5rem;font-weight:800;color:#66fcf1;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px}.question-text{font-size:1.1rem;margin-bottom:20px;line-height:1.4;color:#c5c6c7}.options-container{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}.btn-option{background:#0b0c10;border:1px solid #c5c6c7;color:#fff;padding:14px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s ease;text-align:left}.btn-option:active{transform:scale(.98)}.btn-option.correct{background-color:#2e7d32!important;border-color:#4caf50!important;color:#fff}.btn-option.wrong{background-color:#c62828!important;border-color:#ef5350!important;color:#fff}.essay-container{margin-bottom:20px;display:none}.essay-input{width:100%;height:90px;background:#0b0c10;border:1px solid #c5c6c7;border-radius:10px;color:#fff;padding:12px;font-size:1rem;resize:none;outline:none;transition:border-color .2s}.essay-input:focus{border-color:#66fcf1}.btn-submit-essay{background:#45a29e;color:#0b0c10;border:none;padding:12px 20px;font-size:.95rem;font-weight:700;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;text-transform:uppercase}.btn-next,.btn-restart{background:linear-gradient(45deg,#45a29e,#66fcf1);color:#0b0c10;border:none;padding:12px 24px;font-size:1rem;font-weight:800;border-radius:8px;cursor:pointer;text-transform:uppercase;display:none;width:100%}.score-box{display:none}.score-box h2{color:#66fcf1;font-size:2rem;margin:15px 0}
+        .loading-dots::after { content: ' .'; animation: dots 1s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { content: ' .'; } 40% { content: ' ..'; } 60% { content: ' ...'; } 80%, 100% { content: ''; } }
+    </style>
+</head>
+<body>
+
+    <div class="stars-bg"></div>
+
+    <div class="quiz-card" id="quiz-card">
+        <div id="quiz-box">
+            <div id="question-number" class="quiz-header">Xyfinzz Project</div>
+            <div id="question" class="question-text">Loading Soal<span class="loading-dots"></span></div>
+            
+            <div id="options" class="options-container"></div>
+
+            <div id="essay-box" class="essay-container">
+                <textarea id="essay-input" class="essay-input" placeholder="Ketik jawabanmu di sini..."></textarea>
+                <button id="submit-essay-btn" class="btn-submit-essay" onclick="checkEssayAnswer()">Kirim Jawaban</button>
+            </div>
+
+            <button id="next-btn" class="btn-next" onclick="nextQuestion()">Lanjut ➔</button>
+        </div>
+
+        <div id="score-box" class="score-box">
+            <div class="quiz-header">HASIL KUIS</div>
+            <p>Skor Akhir Kamu:</p>
+            <h2 id="final-score">0</h2>
+            <p id="score-comment" style="margin-bottom: 20px; color: #c5c6c7;"></p>
+            <button class="btn-restart" style="display: block;" onclick="restartQuiz()">Coba Lagi 🔄 (main kok ngulang sih!)</button>
+        </div>
+    </div>
+
+    <script>
+        // Inisialisasi AudioContext secara 'Lazy' (saat butuh panggil audio/interaksi)
+        var _0x4f12=["\x73\x75\x73\x70\x65\x6E\x64\x65\x64","\x72\x65\x73\x75\x6D\x65","\x63\x72\x65\x61\x74\x65\x4F\x73\x63\x69\x6C\x6C\x61\x74\x6F\x72","\x63\x72\x65\x61\x74\x65\x47\x61\x69\x6E","\x63\x6F\x6E\x6E\x65\x63\x74","\x64\x65\x73\x74\x69\x6E\x61\x74\x69\x6F\x6E","\x63\x6F\x72\x72\x65\x63\x74","\x74\x72\x69\x61\x6E\x67\x6C\x65","\x74\x79\x70\x65","\x63\x75\x72\x72\x65\x6E\x74\x54\x69\x6D\x65","\x73\x65\x74\x56\x61\x6C\x75\x65\x41\x74\x54\x69\x6D\x65","\x66\x72\x65\x71\x75\x65\x6E\x63\x79","\x65\x78\x70\x6F\x6E\x65\x6E\x74\x69\x61\x6C\x52\x61\x6D\x70\x54\x6F\x56\x61\x6C\x75\x65\x41\x74\x54\x69\x6D\x65","\x67\x61\x69\x6E","\x73\x74\x61\x72\x74","\x73\x74\x6F\x70","\x77\x72\x6F\x6E\x67","\x73\x61\x77\x74\x6F\x6F\x74\x68"];
+        let audioCtx;
+        function getAudioContext() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            return audioCtx;
+        }
+
+        function playSound(_0x9a83x2){
+            try {
+                const ctx = getAudioContext();
+                if(ctx.state===_0x4f12[0]){ctx[_0x4f12[1]]()}
+                const _0x9a83x3=ctx[_0x4f12[2]]();
+                const _0x9a83x4=ctx[_0x4f12[3]]();
+                _0x9a83x3[_0x4f12[4]](_0x9a83x4);
+                _0x9a83x4[_0x4f12[4]](ctx[_0x4f12[5]]);
+                if(_0x9a83x2===_0x4f12[6]){
+                    _0x9a83x3[_0x4f12[8]]=_0x4f12[7];
+                    _0x9a83x3[_0x4f12[11]][_0x4f12[10]](523.25,ctx[_0x4f12[9]]);
+                    _0x9a83x3[_0x4f12[11]][_0x4f12[12]](880,ctx[_0x4f12[9]]+0.2);
+                    _0x9a83x4[_0x4f12[13]][_0x4f12[10]](0.3,ctx[_0x4f12[9]]);
+                    _0x9a83x4[_0x4f12[13]][_0x4f12[12]](0.01,ctx[_0x4f12[9]]+0.3);
+                    _0x9a83x3[_0x4f12[14]]();
+                    _0x9a83x3[_0x4f12[15]](ctx[_0x4f12[9]]+0.3)
+                }else if(_0x9a83x2===_0x4f12[16]){
+                    _0x9a83x3[_0x4f12[8]]=_0x4f12[17];
+                    _0x9a83x3[_0x4f12[11]][_0x4f12[10]](220,ctx[_0x4f12[9]]);
+                    _0x9a83x3[_0x4f12[11]][_0x4f12[12]](110,ctx[_0x4f12[9]]+0.3);
+                    _0x9a83x4[_0x4f12[13]][_0x4f12[10]](0.4,ctx[_0x4f12[9]]);
+                    _0x9a83x4[_0x4f12[13]][_0x4f12[12]](0.01,ctx[_0x4f12[9]]+0.3);
+                    _0x9a83x3[_0x4f12[14]]();
+                    _0x9a83x3[_0x4f12[15]](ctx[_0x4f12[9]]+0.3)
+                }
+            } catch(e) {}
+        }
+
+        const quizData=[{type:"multiple",question:"Apa yang punya kaki 4 tapi gak bisa jalan, dan kalau dia tidur, kita yang harus bangunin?",options:["Kursi","Kasur","Meja","Kucing"],answer:2},{type:"multiple",question:"Huruf apa yang paling dingin di dunia?",options:["Huruf B","Huruf C","Huruf K","Huruf W"],answer:0},{type:"multiple",question:"Apa yang ditarik malah makin jauh, tapi didorong malah makin deket?",options:["Masa Depan","Pintu Geser","Tali Layang-layang","Jalanan"],answer:3},{type:"multiple",question:"Aku selalu ada di depanmu tapi kamu gak bisa lihat aku. Siapakah aku?",options:["Cita-cita","Hidung","Bayangan","Masa Depan"],answer:3},{type:"multiple",question:"Benda apa yang kalau dipegang makin basah, tapi kalau ditaruh di air malah kering?",options:["Spesies Ikan","Kain Lap","Handuk","Es Batu"],answer:2},{type:"multiple",question:"Negara apa yang hobi banget makan?",options:["Hungaria","Thailand","Indonesia","Arab Saudi"],answer:0},{type:"multiple",question:"Kenapa matahari makin lama makin panas?",options:["Karena efek rumah kaca","Karena matahari lagi puber","Karena dia gak pakai kipas angin","Karena banyak yang minta gratisan"],answer:2},{type:"multiple",question:"Jam berapa yang bisa jalan sendiri?",options:["Jam dinding","Jam tangan","Jam 12 siang","Jam pasir"],answer:3},{type:"multiple",question:"Apa persamaan tukang bakso dengan tukang sate?",options:["Sama-sama jualan","Sama-sama gak jual nasi goreng","Sama-sama pake gerobak","Sama-sama enak"],answer:1},{type:"multiple",question:"Kenapa saat berenang airnya terasa dingin?",options:["Karena airnya es","Karena kamu belum mandi","Karena ikannya nggak pakai baju","Karena airnya gak punya perasaan"],answer:2},{type:"multiple",question:"Siapa Pembuat quiz ini?",options:["Pihak ketiga","Halim","Seseorang yang penah kamu temui","Xyfinz Project"],answer:3},{type:"multiple",question:"Kenapa burung terbang ke arah selatan saat musim dingin?",options:["Karena di selatan lebih hangat","Karena kalau jalan kaki kelamaan","Karena angin berhembus ke selatan","Karena gak punya ongkos naik travel"],answer:1},{type:"multiple",question:"Jika dibutuhkan dibuang, tapi jika tidak dibutuhkan malah disimpan. Benda apakah itu?",options:["Sampah kering","Dompet kosong","Jangkar kapal","Payung hujan"],answer:2},{type:"multiple",question:"Ban apa yang gak bisa berputar sama sekali padahal mobilnya jalan?",options:["Ban kempes","Ban serep","Ban dalam","Bandar udara"],answer:1},{type:"multiple",question:"Apa bedanya pemuda zaman dulu sama pemuda zaman sekarang?",options:["Pemuda dulu suka perang, pemuda sekarang suka rebahan","Pemuda dulu memperjuangkan HP, pemuda sekarang memegang HP","Pemuda dulu sumpah pemuda, pemuda sekarang susah dipuji","Pemuda dulu nyari kitab, pemuda sekarang nyari WiFi"],answer:3},{type:"multiple",question:"Nenek-nenek tenggelam di kali, pas muncul di permukaan yang keliatan apanya dulu?",options:["Rambut ubanan","Tangan melambai","Busa airnya","Gelembung nafasnya"],answer:2},{type:"multiple",question:"Lemari apa yang ukurannya bisa masuk ke dalam kantong celana?",options:["Lemari plastik","Lemaribibu","Lemari miniatur","Lemari es"],answer:1},{type:"multiple",question:"Orang apa yang ditembak berulang kali tapi gak bakalan mati atau terluka?",options:["Orang sakti","Tentara Latihan","Model foto / Fotografer","Orang halusinasi"],answer:2},{type:"multiple",question:"Punya mata tiga, tapi gak bisa melihat, kerjanya cuma ngatur lalu lintas. Apakah itu?",options:["Dukun jalanan","Lampu merah","Polisi tidur","CCTV rusak"],answer:1},{type:"essay",question:"[ESSAY] Sekali lagi admin yang bikin nih quiz siapa? yg gak jawab nilainya gak 100 lhoo!🗿",keywords:["ytta","xyfinzz","adalah pokoknya","halim","xyfinz project"]}];
+
+        let _0xda81=0,_0xb4c1=0;
+        const _0xe1a1=document.getElementById("quiz-card");
+        const _0xe2b2=document.getElementById("question-number");
+        const _0xe3c3=document.getElementById("question");
+        const _0xe4d4=document.getElementById("options");
+        const _0xe5e5=document.getElementById("essay-box");
+        const _0xe6f6=document.getElementById("essay-input");
+        const _0xe7a7=document.getElementById("submit-essay-btn");
+        const _0xe8b8=document.getElementById("next-btn");
+        const _0xe9c9=document.getElementById("quiz-box");
+        const _0xfa0a=document.getElementById("score-box");
+        const _0xfb1b=document.getElementById("final-score");
+        const _0xfc2c=document.getElementById("score-comment");
+
+        function loadQuestion(){
+            resetState();
+            const _0x12a3=quizData[_0xda81];
+            _0xe2b2.innerText="SOAL "+(_0xda81+1)+" / "+quizData.length;
+            _0xe3c3.innerText=_0x12a3.question;
+            if(_0x12a3.type==="multiple"){
+                _0xe4d4.style.display="flex";
+                _0xe5e5.style.display="none";
+                _0x12a3.options.forEach((_0x34b5,_0x56c7)=>{
+                    const _0x78d9=document.createElement("button");
+                    _0x78d9.innerText=_0x34b5;
+                    _0x78d9.classList.add("btn-option");
+                    _0x78d9.addEventListener("click",()=>selectAnswer(_0x78d9,_0x56c7));
+                    _0xe4d4.appendChild(_0x78d9);
+                });
+            }else if(_0x12a3.type==="essay"){
+                _0xe4d4.style.display="none";
+                _0xe5e5.style.display="block";
+                _0xe6f6.value="";
+                _0xe6f6.disabled=false;
+                _0xe6f6.style.borderColor="#c5c6c7";
+                _0xe7a7.disabled=false;
+            }
+        }
+
+        function resetState(){_0xe8b8.style.display="none";_0xe4d4.innerHTML=""}
+
+        function selectAnswer(_0x89e0,_0x90f1){
+            const _0x11a2=quizData[_0xda81].answer;
+            const _0x22b3=_0xe4d4.children;
+            for(let _0x33c4 of _0x22b3){_0x33c4.disabled=true}
+            if(_0x90f1===_0x11a2){
+                _0x89e0.classList.add("correct");
+                playSound("correct");
+                _0xb4c1+=100/quizData.length;
+            }else{
+                _0x89e0.classList.add("wrong");
+                playSound("wrong");
+                _0xe1a1.classList.add("shake");
+                setTimeout(()=>_0xe1a1.classList.remove("shake"),400);
+            }
+            _0xe8b8.style.display="block";
+        }
+
+        function checkEssayAnswer(){
+            const _0x44d5=_0xe6f6.value.trim().toLowerCase();
+            if(_0x44d5==="")return;
+            const _0x55e6=quizData[_0xda81].keywords;
+            const _0x66f7=_0x55e6.some(_0x77a8=>_0x44d5.includes(_0x77a8));
+            _0xe6f6.disabled=true;
+            _0xe7a7.disabled=true;
+            if(_0x66f7){
+                playSound("correct");
+                _0xb4c1+=100/quizData.length;
+                _0xe6f6.style.borderColor="#4caf50";
+            }else{
+                playSound("wrong");
+                _0xe1a1.classList.add("shake");
+                setTimeout(()=>_0xe1a1.classList.remove("shake"),400);
+                _0xe6f6.style.borderColor="#ef5350";
+            }
+            _0xe8b8.style.display="block";
+        }
+
+        function nextQuestion(){
+            _0xda81++;
+            if(_0xda81<quizData.length){loadQuestion()}
+            else{showScore()}
+        }
+
+        function showScore(){
+            _0xe9c9.style.display="none";
+            _0xfa0a.style.display="block";
+            const _0x88b9=Math.round(_0xb4c1);
+            _0xfb1b.innerText=_0x88b9;
+            if(_0x88b9>=90){_0xfc2c.innerText="Wihh congrats yah💯🎉, gajadi happy gw! Btw ini gak googling kan? 🗿"}
+            else if(_0x88b9>=50){_0xfc2c.innerText="Nanggung amat! Ini antara lu pinter dikit atau emang jago nebak doang wkwk. 🤏"}
+            else{_0xfc2c.innerText="Aduhh parah, IQ lu ketinggalan di warung/rumah gebetan? Ngulang gih! 😭"}
+        }
+
+        function restartQuiz(){
+            _0xda81=0;
+            _0xb4c1=0;
+            _0xe9c9.style.display="block";
+            _0xfa0a.style.display="none";
+            loadQuestion();
+        }
+
+        // Timer 3.5 detik berjalan aman tanpa kepotong Web Audio API
+        setTimeout(function(){
+            loadQuestion();
+        }, 3500);
+    </script>
+</body>
+</html>
