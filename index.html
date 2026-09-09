@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finz — Level Up</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #09090b;
+      --card-bg: #121215;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --text: #f4f4f5;
+      --text-dim: #a1a1aa;
+      --flame: #fbbf24;
+      --border: #27272a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100dvh; /* Menggunakan dvh agar pas dengan height layar HP modern */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px; /* Dikurangi sedikit agar lebih lapang di HP */
+}
+
+.container {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px 20px; /* Padding dalam dibuat lebih efisien */
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+    .header { text-align: center; }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-glow);
+      color: var(--accent);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    p.subtitle {
+      color: var(--text-dim);
+      font-size: 0.875rem;
+      margin-bottom: 24px;
+    }
+
+    /* --- CAKE UI (SCALED PERFECT) --- */
+.cake-wrapper {
+  position: relative;
+  width: 200px;
+  height: 160px;
+  margin: 0 auto;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(0.75);
+  transform-origin: center center;
+  left: 50%;
+  margin-left: -100px; /* Menarik balik posisi container ke tengah presisi */
+}
+
+.candle {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 32px;
+  background: linear-gradient(to right, #e2e8f0, #cbd5e1);
+  border-radius: 4px;
+  z-index: 10;
+}
+
+.flame {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 22px;
+  background: radial-gradient(circle, #fff 10%, #fbbf24 60%, #f97316 100%);
+  border-radius: 50% 50% 20% 20%;
+  box-shadow: 0 0 20px #fbbf24, 0 0 35px #f97316;
+  animation: flicker 0.8s infinite alternate ease-in-out;
+  transition: all 0.3s ease;
+}
+
+.flame.off {
+  opacity: 0;
+  transform: translateX(-50%) scale(0);
+  box-shadow: none;
+}
+
+.cake-tier {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 10px 10px 6px 6px;
+}
+
+.tier-top {
+  top: 40px;
+  width: 90px;
+  height: 38px;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  z-index: 3;
+}
+
+.tier-middle {
+  top: 75px;
+  width: 130px;
+  height: 42px;
+  background: #1f1f23;
+  border: 1px solid #333338;
+  z-index: 2;
+}
+
+.tier-bottom {
+  top: 114px;
+  width: 170px;
+  height: 46px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  z-index: 1;
+}
+
+.cream-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 10px 10px 4px 4px;
+  opacity: 0.9;
+}
+
+.cherry {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ef4444;
+  z-index: 4;
+}
+
+    .status-text {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .mic-btn {
+      display: block;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mic-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+
+    /* --- WISH SECTION --- */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 20px 0;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .wish-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .wish-form input, .wish-form textarea {
+      background: #18181b;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .wish-form input:focus, .wish-form textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .wish-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .wish-card {
+      background: #18181b;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+
+    .wish-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .wish-author {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: none; /* Default sembunyi */
+      font-weight: 600;
+    }
+
+    .delete-btn.active {
+      display: inline-block; /* Muncul jika Admin */
+    }
+
+    .wish-text {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <div class="badge">SYSTEM EVENT</div>
+      <h1>Happy Birthday, Fiqz</h1>
+      <p class="subtitle">Deploying a new personal era.</p>
+    </div>
+
+    <div class="cake-wrapper" id="cakeContainer">
+      <div class="candle"><div class="flame" id="flame"></div></div>
+      <div class="cherry"></div>
+      <div class="cake-tier tier-top"><div class="cream-top"></div></div>
+      <div class="cake-tier tier-middle"><div class="cream-top"></div></div>
+      <div class="cake-tier tier-bottom"><div class="cream-top"></div></div>
+    </div>
+
+    <div class="status-text" id="statusText">Sentuh kue / tiup untuk matikan lilin 🕯️</div>
+    <button class="mic-btn" id="micBtn" onclick="initMic()">🎤 Aktifkan Sensor Tiupan (Mik)</button>
+
+    <hr>
+
+    <div class="wish-section">
+      <!-- Klik judul ini 3x untuk buka Login Admin -->
+      <div class="section-title" id="sectionTitle" onclick="toggleAdminPrompt()">💬 Ucapan Selamat <span id="adminBadge" style="font-size:0.7rem; color:#ef4444;"></span></div>
+      
+      <form class="wish-form" id="wishForm">
+        <input type="text" id="nameInput" placeholder="Name/Handle kamu" required>
+        <textarea id="messageInput" rows="2" placeholder="Comment" required></textarea>
+        <button type="submit" class="btn" id="submitBtn">Send</button>
+      </form>
+
+      <div class="wish-list" id="wishList"></div>
+    </div>
+  </div>
+
+     <script>
+    // === CONFIG SUPABASE ===
+    const SUPABASE_URL = 'https://lkuhnqrkbmqrpdzkxiap.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxrdWhucXJrYm1xcnBkemt4aWFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2MTEwMDcsImV4cCI6MjEwNDE4NzAwN30.lDvma2Gm2UJeFfsRW5XWCENj_P5iPOkZtKLiRYSQiNU';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // PASSSWORD ADMIN KAMU (Ganti sesuai keinginan!)
+    const ADMIN_PASSWORD = "finz123";
+    let isAdmin = false;
+    let clickCount = 0;
+
+    let isLit = true;
+
+    function blowOutCandle() {
+      if (!isLit) return;
+      document.getElementById('flame').classList.add('off');
+      document.getElementById('statusText').innerText = "Level up complete! Cheers to another year 🎉";
+      isLit = false;
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#6366f1', '#a855f7', '#ec4899', '#3b82f6']
+        });
+      }
+    }
+
+    function toggleCandle() {
+      if (isLit) {
+        blowOutCandle();
+      } else {
+        document.getElementById('flame').classList.remove('off');
+        document.getElementById('statusText').innerText = "Sentuh kue / tiup untuk matikan lilin 🕯️";
+        isLit = true;
+      }
+    }
+
+    const cakeEl = document.getElementById('cakeContainer');
+    cakeEl.addEventListener('click', toggleCandle);
+    cakeEl.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      toggleCandle();
+    }, {passive: false});
+
+    function initMic() {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        document.getElementById('micBtn').innerText = "🎤 Sensor Mik Aktif! Silakan Tiup";
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioCtx.createAnalyser();
+        const mic = audioCtx.createMediaStreamSource(stream);
+        mic.connect(analyser);
+        
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        function checkAudio() {
+          analyser.getByteFrequencyData(data);
+          let sum = 0;
+          for (let i = 0; i < data.length; i++) sum += data[i];
+          let average = sum / data.length;
+          
+          if (average > 35 && isLit) {
+            blowOutCandle();
+          }
+          requestAnimationFrame(checkAudio);
+        }
+        checkAudio();
+      }).catch(() => {
+        alert("Akses mik ditolak / tidak didukung di browser ini.");
+      });
+    }
+
+    // === SISTEM LOGIN ADMIN ===
+    function toggleAdminPrompt() {
+      clickCount++;
+      if (clickCount >= 3) {
+        clickCount = 0;
+        if (isAdmin) {
+          if (confirm("Logout dari Mode Admin?")) {
+            isAdmin = false;
+            document.getElementById('adminBadge').innerText = "";
+            document.querySelectorAll('.delete-btn').forEach(b => b.classList.remove('active'));
+          }
+        } else {
+          const pass = prompt("Masukkan Password Admin:");
+          if (pass === ADMIN_PASSWORD) {
+            isAdmin = true;
+            document.getElementById('adminBadge').innerText = "(Admin)";
+            document.querySelectorAll('.delete-btn').forEach(b => b.classList.add('active'));
+            alert("Berhasil masuk mode Admin! Tombol hapus sekarang muncul.");
+          } else if (pass !== null) {
+            alert("Password Salah!");
+          }
+        }
+      }
+    }
+
+    // === REALTIME & WISH HANDLER ===
+    function addWishToUI(id, name, message) {
+      const list = document.getElementById('wishList');
+      const card = document.createElement('div');
+      card.className = 'wish-card';
+      card.id = `wish-${id}`;
+      
+      const activeClass = isAdmin ? 'active' : '';
+
+      card.innerHTML = `
+        <div class="wish-header">
+          <div class="wish-author">${escapeHtml(name)}</div>
+          <button class="delete-btn ${activeClass}" onclick="deleteWish(${id})">Hapus</button>
+        </div>
+        <div class="wish-text">${escapeHtml(message)}</div>
+      `;
+      list.prepend(card);
+    }
+
+    async function deleteWish(id) {
+      if (!isAdmin) return;
+      if (confirm("Apakah kamu yakin ingin menghapus pesan ini?")) {
+        const { error } = await supabaseClient
+          .from('wishes')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          alert("Gagal menghapus pesan!");
+        }
+      }
+    }
+
+    async function loadWishes() {
+      const { data, error } = await supabaseClient
+        .from('wishes')
+        .select('*')
+        .order('id', { ascending: true });
+
+      if (!error && data) {
+        document.getElementById('wishList').innerHTML = '';
+        data.forEach(w => addWishToUI(w.id, w.name, w.message));
+      }
+    }
+
+    document.getElementById('wishForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const name = document.getElementById('nameInput').value;
+      const message = document.getElementById('messageInput').value;
+
+      submitBtn.innerText = "Sending...";
+      submitBtn.disabled = true;
+
+      const { error } = await supabaseClient
+        .from('wishes')
+        .insert([{ name, message }]);
+
+      if (!error) {
+        document.getElementById('wishForm').reset();
+      } else {
+        alert("Gagal mengirim pesan, coba lagi!");
+      }
+
+      submitBtn.innerText = "Kirim Ucapan";
+      submitBtn.disabled = false;
+    });
+
+    // Realtime Listening
+    supabaseClient
+      .channel('public:wishes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'wishes' }, payload => {
+        addWishToUI(payload.new.id, payload.new.name, payload.new.message);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'wishes' }, payload => {
+        const el = document.getElementById(`wish-${payload.old.id}`);
+        if (el) el.remove();
+      })
+      .subscribe();
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    loadWishes();
+  </script>
+</body>
+</html>
