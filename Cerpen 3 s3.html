@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYFINZZ PROJECT CERPEN - Carroline Saga</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #06040a;
+            --panel-bg: rgba(18, 12, 32, 0.88);
+            --primary-glow: #a855f7;
+            --secondary-glow: #6366f1;
+            --accent-gold: #fbbf24;
+            --danger-glow: #ef4444;
+            --text-color: #e2e8f0;
+            --border-glow: rgba(168, 85, 247, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 10%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* --------------------------------------------------
+           SCREEN 1: INTRO TEXT (5 DETIK)
+        -------------------------------------------------- */
+        #screen-intro {
+            position: fixed;
+            top: 0; 
+			left: 0; 
+			width: 100vw; 
+			height: 100vh;
+            background: #000; 
+			z-index: 9999;
+            display: flex; 
+			justify-content: center; 
+			align-items: center;
+            opacity: 1; 
+			transition: opacity 1.5s ease-in-out;
+        }
+
+        .intro-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            font-weight: 900; 
+			color: #fff;
+            text-align: center; 
+			letter-spacing: 4px;
+            text-shadow: 
+                0 0 10px rgba(168, 85, 247, 0.8),
+                0 0 20px rgba(168, 85, 247, 0.6),
+                0 0 40px rgba(251, 191, 36, 0.6);
+            animation: pulseIntroText 2.5s infinite alternate;
+            padding: 0 20px;
+        }
+
+        @keyframes pulseIntroText {
+            0% { transform: scale(0.98); filter: brightness(0.9); }
+            100% { transform: scale(1.03); filter: brightness(1.3); }
+        }
+
+        /* --------------------------------------------------
+           SCREEN 2: FANTASY LOADING SCREEN
+        -------------------------------------------------- */
+        #screen-loading {
+            position: fixed;
+            top: 0; 
+			left: 0; 
+			width: 100vw; 
+			height: 100vh;
+            background: var(--bg-color); 
+			z-index: 9998;
+            display: flex; 
+			flex-direction: column;
+            justify-content: center; 
+			align-items: center;
+            opacity: 0; 
+			pointer-events: none; 
+			transition: opacity 1s ease-in-out;
+        }
+
+        .magic-circle-container {
+            position: relative; 
+			width: 140px; 
+			height: 140px;
+            display: flex; 
+			justify-content: center; 
+			align-items: center;
+        }
+
+        .magic-ring {
+            position: absolute; 
+			width: 100%; 
+			height: 100%;
+            border: 2px dashed var(--primary-glow); 
+			border-radius: 50%;
+            animation: spinRight 6s linear infinite;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .magic-ring-inner {
+            position: absolute; 
+			width: 70%; 
+			height: 70%;
+            border: 2px solid var(--accent-gold); 
+			border-radius: 50%;
+            animation: spinLeft 4s linear infinite;
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .magic-icon {
+            font-size: 2rem; 
+			color: var(--accent-gold);
+            animation: pulseGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes spinRight { 100% { transform: rotate(360deg); } }
+        @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+
+        .loading-text {
+            margin-top: 25px; 
+			font-family: 'Cinzel', serif;
+            font-size: 1.1rem; 
+			letter-spacing: 3px; 
+			color: var(--text-color);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .progress-bar-box {
+            width: 220px; height: 6px; background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px; margin-top: 15px; overflow: hidden;
+            border: 1px solid var(--border-glow);
+        }
+
+        .progress-bar-fill {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, var(--secondary-glow), var(--primary-glow), var(--accent-gold));
+            box-shadow: 0 0 10px var(--accent-gold); transition: width 0.3s ease;
+        }
+
+        /* PARTICLES BACKGROUND */
+        #particles {
+            position: fixed; 
+			top: 0; 
+			left: 0; 
+			width: 100%; 
+			height: 100%;
+            pointer-events: none; 
+			z-index: 0;
+        }
+
+        /* HEADER */
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(6, 4, 10, 0.9); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+
+        .logo {
+            font-family: 'Cinzel', serif; font-weight: 800; font-size: 1.1rem;
+            color: var(--accent-gold); text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .header-tools {
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .btn-icon-tool {
+            background: rgba(168, 85, 247, 0.2); border: 1px solid var(--border-glow);
+            color: var(--accent-gold); width: 36px; height: 36px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: all 0.3s ease; font-size: 0.9rem;
+        }
+
+        .btn-icon-tool:hover {
+            background: var(--primary-glow); 
+			color: #fff; 
+			box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .wa-support {
+            display: inline-flex; 
+			align-items: center; 
+			gap: 8px;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: #fff; 
+			padding: 8px 14px; 
+			border-radius: 20px;
+            text-decoration: none; 
+			font-size: 0.85rem; 
+			font-weight: 600;
+            box-shadow: 0 0 12px rgba(37, 211, 102, 0.4); 
+			transition: all 0.3s ease;
+			position: relative;
+            overflow: hidden;
+        }
+		
+		.wa-support::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.2);
+            transform: rotate(45deg) translateY(-100%);
+            transition: all 0.5s ease;
+        }
+
+        .wa-support:hover::after {
+            transform: rotate(45deg) translateY(100%);
+        }
+
+        /* MAIN CONTENT */
+        main {
+            flex: 1; 
+			max-width: 800px; 
+			width: 100%; 
+			margin: 20px auto; 
+			padding: 0 15px;
+            position: relative; 
+			z-index: 1;
+        }
+
+        /* SEASON SELECTOR BUTTONS */
+        .season-selector {
+            display: flex; 
+			gap: 10px; 
+			margin-bottom: 15px; 
+			justify-content: center;
+        }
+
+        .btn-season {
+            flex: 1; padding: 12px; border: 1px solid var(--border-glow);
+            background: rgba(18, 12, 32, 0.8); color: var(--text-color);
+            border-radius: 10px; font-family: 'Cinzel', serif; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease; text-align: center;
+        }
+
+        .btn-season.active {
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            color: #fff; border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* STORY PANEL */
+        .story-card {
+            background: var(--panel-bg); 
+			border: 1px solid var(--border-glow);
+            border-radius: 16px; 
+			padding: 25px 20px; 
+			backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), 0 0 20px rgba(168, 85, 247, 0.2);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chapter-badge {
+            display: inline-block; font-family: 'Cinzel', serif; font-size: 0.8rem;
+            color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 8px; background: rgba(251, 191, 36, 0.1);
+            padding: 4px 12px; border-radius: 10px; border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .chapter-title {
+            font-family: 'Cinzel', serif; font-size: 1.5rem; color: #fff;
+            margin-bottom: 20px; text-shadow: 0 0 10px var(--primary-glow);
+            border-bottom: 1px dashed rgba(168, 85, 247, 0.4); padding-bottom: 10px;
+        }
+
+        .story-content {
+            font-size: 1.05rem; line-height: 1.8; color: #ece4f9; text-align: justify;
+        }
+
+        .story-content p { margin-bottom: 18px; text-indent: 20px; }
+
+        /* MINIGAME CONTAINER */
+        .minigame-box {
+            background: rgba(10, 6, 22, 0.95); border: 2px solid var(--accent-gold);
+            border-radius: 14px; padding: 20px; margin: 20px 0; text-align: center;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.25);
+        }
+
+        .minigame-title {
+            font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 1.2rem;
+            margin-bottom: 10px; text-shadow: 0 0 8px var(--accent-gold);
+        }
+
+        .minigame-desc { font-size: 0.9rem; margin-bottom: 15px; color: #cbd5e1; }
+
+        /* BATTLE MINIGAME STYLES */
+        .battle-status-container {
+            display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px;
+        }
+
+        .fighter-card {
+            flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
+            border: 1px solid var(--border-glow); text-align: left;
+        }
+
+        .hp-bar-bg {
+            width: 100%; height: 10px; background: rgba(255,255,255,0.1);
+            border-radius: 5px; overflow: hidden; margin-top: 5px;
+        }
+
+        .hp-bar-fill {
+            height: 100%; background: linear-gradient(90deg, #22c55e, #86efac);
+            width: 100%; transition: width 0.3s ease;
+        }
+
+        .hp-bar-enemy { background: linear-gradient(90deg, #ef4444, #fca5a5); }
+
+        .battle-log {
+            height: 85px; background: rgba(0,0,0,0.6); border-radius: 8px;
+            padding: 8px; font-size: 0.85rem; overflow-y: auto; text-align: left;
+            margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); color: #a7f3d0;
+        }
+
+        /* CONTROL & BUTTONS */
+        .controls { 
+		display: flex; 
+		flex-direction: column; 
+		gap: 15px; 
+		margin-top: 20px; 
+		}
+
+        .select-wrapper { position: relative; width: 100%; }
+        .select-wrapper::after {
+            content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--accent-gold); pointer-events: none; font-size: 1.1rem;
+        }
+
+        .chapter-select {
+            width: 100%; 
+			padding: 14px 45px 14px 18px;
+            background: linear-gradient(135deg, rgba(20, 14, 38, 0.95), rgba(10, 7, 20, 0.95));
+            border: 1.5px solid var(--border-glow); 
+			color: var(--accent-gold);
+            border-radius: 12px; 
+			font-family: 'Cinzel', serif; 
+			font-weight: 700;
+            font-size: 0.95rem; 
+			outline: none; 
+			cursor: pointer; 
+			appearance: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(168, 85, 247, 0.15);
+            transition: all 0.3s ease;
+        }
+		
+		.chapter-select:hover, .chapter-select:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px var(--border-glow), inset 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .chapter-select option {
+            background: #0d0918;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .nav-buttons { 
+		display: flex; 
+		justify-content: space-between; 
+		gap: 12px; 
+		}
+
+        .btn-glow {
+            flex: 1; 
+			padding: 14px; 
+			border: 1.5px solid var(--border-glow);
+            background: linear-gradient(135deg, rgba(38, 21, 68, 0.9) 0%, rgba(18, 11, 35, 0.9) 100%);
+            color: #fff; 
+			border-radius: 12px; 
+			font-family: 'Cinzel', serif; 
+			font-weight: 700;
+            font-size: 0.85rem; 
+			letter-spacing: 1px; 
+			cursor: pointer; 
+			position: relative;
+            overflow: hidden; 
+			transition: all 0.3s ease; 
+			display: flex; 
+			align-items: center;
+            justify-content: center; 
+			gap: 8px; 
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+		
+		.btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-glow:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-glow:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-glow) 0%, var(--secondary-glow) 100%);
+            border-color: var(--accent-gold); 
+			box-shadow: 0 0 20px var(--primary-glow), 0 0 10px var(--accent-gold);
+            transform: translateY(-2px);
+			color: #fff;
+        }
+		
+		.btn-glow:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn-glow:disabled { 
+		opacity: 0.3; 
+		cursor: not-allowed; 
+		border-color: rgba(255,255,255,0.1); 
+		box-shadow: none;
+		}
+
+        .btn-action {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(99, 102, 241, 0.4));
+            border: 1px solid var(--accent-gold); color: #fff; padding: 10px 16px;
+            border-radius: 8px; font-family: 'Cinzel', serif; font-weight: 700;
+            cursor: pointer; transition: all 0.2s ease; margin: 4px;
+        }
+
+        .btn-action:hover { background: var(--accent-gold); color: #000; box-shadow: 0 0 10px var(--accent-gold); }
+
+        /* MODAL OVERLAY COMMON */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 999;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            background: var(--panel-bg); border: 2px solid var(--accent-gold);
+            border-radius: 16px; padding: 25px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px var(--primary-glow); position: relative;
+        }
+
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; color: var(--accent-gold);
+            font-size: 1.3rem; cursor: pointer; transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--danger-glow); }
+
+        .status-header {
+            font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 1.3rem;
+            margin-bottom: 15px; border-bottom: 1px dashed var(--border-glow); padding-bottom: 8px;
+        }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.9rem; }
+        .status-box { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid var(--border-glow); }
+        .status-box h4 { color: var(--primary-glow); margin-bottom: 6px; font-family: 'Cinzel', serif; }
+
+        /* INVENTORY LIST */
+        .inventory-list {
+            display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding-right: 5px;
+        }
+
+        .inventory-item {
+            display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.4);
+            padding: 10px; border-radius: 8px; border: 1px solid var(--border-glow);
+        }
+
+        .inventory-item i { font-size: 1.5rem; color: var(--accent-gold); width: 30px; text-align: center; }
+
+        footer { 
+		text-align: center; 
+		padding: 20px; 
+		font-size: 0.8rem; 
+		color: #7e6c9c; 
+		margin-top: auto; 
+		position: relative;
+        z-index: 1;
+		}
+
+        @media (max-width: 600px) {
+            header { padding: 10px 12px; }
+            .logo { font-size: 0.95rem; }
+            .wa-support { padding: 6px 10px; font-size: 0.75rem; }
+            .chapter-title { font-size: 1.25rem; }
+            .story-content { font-size: 0.95rem; }
+            .btn-glow { font-size: 0.75rem; padding: 12px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN 1: INTRO -->
+    <div id="screen-intro">
+        <h1 class="intro-title">XYFINZZ - STORY</h1>
+    </div>
+
+    <!-- SCREEN 2: FANTASY LOADING -->
+    <div id="screen-loading">
+        <div class="magic-circle-container">
+            <div class="magic-ring"></div>
+            <div class="magic-ring-inner"></div>
+            <i class="fa-solid fa-hat-wizard magic-icon"></i>
+        </div>
+        <div class="loading-text">MEMUAT DUNIA FANTASY...</div>
+        <div class="progress-bar-box">
+            <div id="progress-fill" class="progress-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- BACKGROUND CANVAS -->
+    <canvas id="particles"></canvas>
+
+    <!-- HEADER / NAVBAR -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-dragon"></i>
+            <span>Carroline Saga</span>
+        </div>
+        <div class="header-tools">
+            <button class="btn-icon-tool" onclick="toggleAudio()" title="Toggle BGM Audio">
+                <i id="audio-icon" class="fa-solid fa-volume-xmark"></i>
+            </button>
+            <button class="btn-icon-tool" onclick="openStatusModal()" title="Status Karakter">
+                <i class="fa-solid fa-user-shield"></i>
+            </button>
+            <button class="btn-icon-tool" onclick="openInventoryModal()" title="Inventaris Dewa">
+                <i class="fa-solid fa-briefcase"></i>
+            </button>
+            <a href="https://wa.me/628157093645" target="_blank" class="wa-support">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>Kontak Support</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- TOMBOL PILIHAN SEASON -->
+        <div class="season-selector">
+            <button id="btn-season-1" class="btn-season active" onclick="switchSeason(1)">SEASON 1</button>
+            <button id="btn-season-2" class="btn-season" onclick="switchSeason(2)">SEASON 2</button>
+            <button id="btn-season-3" class="btn-season" onclick="switchSeason(3)">SEASON 3</button>
+        </div>
+
+        <div class="story-card">
+            <div id="chapter-badge" class="chapter-badge">Season 1 • Bab 1</div>
+            <h2 id="chapter-title" class="chapter-title">Memuat Judul...</h2>
+            
+            <div id="story-content" class="story-content">
+                <!-- Teks cerita -->
+            </div>
+
+            <!-- CONTAINER DYNAMIC MINIGAME -->
+            <div id="minigame-container"></div>
+
+            <!-- BANNER SEASON END -->
+            <div id="season-end" class="season-end-banner" style="display: none; text-align: center; background: linear-gradient(135deg, rgba(88, 28, 135, 0.6), rgba(168, 85, 247, 0.3)); border: 2px dashed var(--accent-gold); padding: 25px; border-radius: 12px; margin-top: 25px;">
+                <h3 id="season-end-title" style="font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 8px;"><i class="fa-solid fa-wand-magic-sparkles"></i> BERSAMBUNG KE SEASON 2 <i class="fa-solid fa-wand-magic-sparkles"></i></h3>
+                <p id="season-end-desc">Kisah Carroline dan Fenrir baru saja dimulai. Klik tombol Season 2 di atas untuk melanjutkan!</p>
+            </div>
+        </div>
+
+        <!-- NAVIGASI & SELECT BAB -->
+        <div class="controls">
+            <div class="select-wrapper">
+                <select id="chapter-select" class="chapter-select" onchange="jumpToChapter(this.value)">
+                </select>
+            </div>
+
+            <div class="nav-buttons">
+                <button id="btn-prev" class="btn-glow" onclick="changeChapter(-1)">
+                    <i class="fa-solid fa-chevron-left"></i> SEBELUMNYA
+                </button>
+                <button id="btn-next" class="btn-glow" onclick="changeChapter(1)">
+                    SELANJUTNYA <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL STATUS KARAKTER -->
+    <div id="status-modal" class="modal-overlay" onclick="handleModalClick(event, 'status-modal')">
+        <div class="modal-card">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeStatusModal()"></i>
+            <div class="status-header"><i class="fa-solid fa-scroll"></i> Status Petualang & Satwa</div>
+            <div class="status-grid">
+                <div class="status-box">
+                    <h4>Carroline</h4>
+                    <p><strong>Ras:</strong> Manusia (Dunia Nyata)</p>
+                    <p><strong>Sifat:</strong> Berani, Cold, Baik</p>
+                    <p><strong>Sihir:</strong> Segil Dewa (Tingkat Akhir)</p>
+                    <p><strong>Status:</strong> Ratu Bayangan Murni</p>
+                </div>
+                <div class="status-box">
+                    <h4>Fenrir</h4>
+                    <p><strong>Ras:</strong> Serigala Bayangan Dewa Interdimensional</p>
+                    <p><strong>Elemen:</strong> Kegelapan / Cahaya / Angin</p>
+                    <p><strong>Tingkat:</strong> Satwa Kontrak Tingkat Tertinggi</p>
+                    <p><strong>Skill:</strong> Sayap Kristal Abadi & Tebasan Dewa</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INVENTARIS KARAKTER -->
+    <div id="inventory-modal" class="modal-overlay" onclick="handleModalClick(event, 'inventory-modal')">
+        <div class="modal-card">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeInventoryModal()"></i>
+            <div class="status-header"><i class="fa-solid fa-box-open"></i> Tas & Inventaris Dewa</div>
+            <div class="inventory-list">
+                <div class="inventory-item">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <div>
+                        <strong style="color:var(--accent-gold);">Senter HP Modern</strong>
+                        <p style="font-size:0.8rem; color:#cbd5e1;">Barang dunia nyata yang memiliki energi radiasi unik di dunia sihir.</p>
+                    </div>
+                </div>
+                <div class="inventory-item">
+                    <i class="fa-solid fa-book-journal-whills"></i>
+                    <div>
+                        <strong style="color:var(--accent-gold);">Kitab Dewa Terlarang</strong>
+                        <p style="font-size:0.8rem; color:#cbd5e1;">Berisi mantra purba, segil ritual, dan bahasa rahasia Bangsa Bayangan.</p>
+                    </div>
+                </div>
+                <div class="inventory-item">
+                    <i class="fa-solid fa-gem"></i>
+                    <div>
+                        <strong style="color:var(--accent-gold);">Permata Ungu Abadi</strong>
+                        <p style="font-size:0.8rem; color:#cbd5e1;">Penyokong daya Mana tak terbatas hasil ikatan jiwanya dengan Fenrir.</p>
+                    </div>
+                </div>
+				<div class="inventory-item">
+                    <i class="fa-solid fa-gem"></i>
+                    <div>
+                        <strong style="color:var(--accent-gold);">Dokumen Informasi Guild</strong>
+                        <p style="font-size:0.8rem; color:#cbd5e1;">Informasi yang ada untuk membantu carroline mencapai istana musuh.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy;Xyfinzz Interactive Fantasy Story • Carroline's Tale</p>
+    </footer>
+
+    <script>
+        // DATA CERITA SEASON 1
+        const storyDataSeason1 = [
+            {
+                chapter: 1,
+                title: "Suara Malam dan Lorong Rahasia",
+                content: `
+                    <p>Malam itu dingin menjepit, tetapi Carroline tidak pernah betah berdiam diri di kamar tidurnya yang membosankan. Gadis berumur 18 tahun dengan tatapan mata tajam dan sifat pemberaninya itu mengenakan jaket tebalnya, melangkah keluar rumah secara diam-diam tanpa menimbulkan suara.</p>
+                    <p>Rasa penasaran membawa kakinya menembus kegelapan Hutan Pinus Kegelapan yang terletak di belakang desanya. Rumor warga setempat mengatakan ada hal mistis yang terjadi belakangan ini. Di tengah rimbunnya pepohonan, matanya menangkap siluet mulut gua misterius yang tertutup semak belukar tebal dan pintu batu berukir simbol unik.</p>
+                `,
+                hasMinigame: 'puzzle_door'
+            },
+            {
+                chapter: 2,
+                title: "Dunia Satwa dan Kontrak Sihir",
+                content: `
+                    <p>Carroline menutup matanya sejenak saat melangkah menembus tirai cahaya tersebut. Ketika ia membuka matanya kembali, hawa dingin hutan berganti menjadi kehangatan padang rumput biru yang sangat luas di bawah langit berbintang ganda.</p>
+                    <p>Matanya melebar. Ia ternganga menyaksikan pemandangan tak masuk akal di depannya. Di atas langit, melintas seekor burung raksasa bersayap kristal yang ditunggangi seorang manusia. Di kejauhan, seorang pria berjalan santai bersama serigala raksasa bermata api.</p>
+                    <p>"Ini... di mana?" gumam Carroline pelan. Ia menyadari manusia di dunia ini hidup berdampingan dengan monster melalui segil sihir yang dikenal sebagai Satwa Kontrak.</p>
+                `
+            },
+            {
+                chapter: 3,
+                title: "Item Langka Terlarang",
+                content: `
+                    <p>Menyadari dirinya asing dan tidak berdaya tanpa satwa pelindung, Carroline berjalan menyusuri pinggiran kota batu bergaya kuno. Wajahnya kembali dingin dan cuek, sengaja tidak menghiraukan tatapan aneh orang-orang di sekitar.</p>
+                    <p>Saat melintasi lorong pasar kumuh di luar benteng, matanya menangkap sesuatu yang berkilau di tumpukan sampah sisa pembongkaran peti tua. Sebuah kotak kayu berukir naga hitam tergeletak tak terurus. Di dalamnya terdapat batu permata berwarna ungu gelap dan sebuah buku petunjuk kuno yang terkunci segil rune.</p>
+                `,
+                hasMinigame: 'rune_book'
+            },
+            {
+                chapter: 4,
+                title: "Hutan Terlarang Celah Bayangan",
+                content: `
+                    <p>Membawa barang berharga terlarang membuatnya mengambil keputusan cepat. Carroline memilih menuju ke arah Hutan Celah Bayangan—area terpencil yang dihindari warga karena konon dipenuhi binatang buas.</p>
+                    <p>Sifatnya yang berani dan bertangan dingin membuatnya mengabaikan suara geraman misterius dari balik pepohonan. Setelah menemukan tempat lapang yang aman, Carroline duduk bersila memelajari syarat ritual Kontrak Dewa.</p>
+                `
+            },
+            {
+                chapter: 5,
+                title: "Pertemuan dengan Fenrir yang Terluka",
+                content: `
+                    <p>Tiba-tiba, suara erangan kesakitan terdengar dari balik semak-semak dekat tebing. Carroline langsung berdiri sigap, menggenggam senter HP-nya sebagai alat pertahanan improvisasi.</p>
+                    <p>Saat mendekat, sifat baiknya yang tersembunyi mendadak mengalahkan rasa waspadanya. Di sana tergeletak seekor anak serigala berbulu perak kehitaman dengan sayap kecil terlipat di punggungnya. Tubuh makhluk itu penuh luka tebasan pedang sihir.</p>
+                    <p>"Jangan takut, aku tidak akan menyakitimu," bisik Carroline lembut. Tanpa ragu, ia merobek bagian bawah bajunya untuk membalut luka pada serigala yang ia beri nama Fenrir.</p>
+                `
+            },
+            {
+                chapter: 6,
+                title: "Ritual Kontrak Tingkat Dewa",
+                content: `
+                    <p>Napas Fenrir mulai lemah. Satu-satunya cara menyelamatkannya adalah dengan mengikat jiwanya melalui ritual Kontrak Dewa. Carroline memecahkan Batu Permata Ungu dan meneteskan darahnya di atas dada Fenrir.</p>
+                    <p>Bantu Carroline menyalurkan energi mana sihir secara sempurna untuk mengaktifkan Lingkaran Sihir Dewa!</p>
+                `,
+                hasMinigame: 'qte_ritual'
+            },
+            {
+                chapter: 7,
+                title: "Kebangkitan Sang Serigala Bayangan",
+                content: `
+                    <p>Cahaya menyilaukan itu perlahan meredup. Luka-luka parah di tubuh Fenrir lenyap tanpa bekas. Anak serigala itu bangkit, tubuhnya berkembang menjadi gagah dengan pendaran aura ungu kelam di sekitar cakar dan matanya yang berwarna emas murni.</p>
+                    <p>Carroline merasakan gelombang energi ajaib mengalir deras ke dalam tubuhnya. Refleks fisiknya meningkat pesat. Fenrir mendekat, menyendul lengan Carroline dengan penuh kesetiaan.</p>
+                `
+            },
+            {
+                chapter: 8,
+                title: "Konfrontasi Pertama",
+                content: `
+                    <p>"Hehe! Lihat apa yang kita temukan di sini! Gadis asing dan serigala mutasi!" tawa sekelompok pemburu liar yang muncul tiba-tiba bersama monster beruang batu milik mereka.</p>
+                    <p>Carroline bersikap dingin dan tidak gentar sedikit pun. Bersama Fenrir, ia bersiap melakukan pertempuran pertama mereka!</p>
+                `,
+                hasMinigame: 'battle_game'
+            },
+            {
+                chapter: 9,
+                title: "Rumor Gelap di Kota Oase",
+                content: `
+                    <p>Setelah mengalahkan para pemburu, Carroline dan Fenrir (yang kini mengecilkan ukurannya menjadi seperti anak anjing biasa) memasuki Kota Oase dengan menyamar menggunakan jubah bertudung.</p>
+                    <p>Di kedai remang-remang, Carroline mendengar kabar bahwa Guild Bayangan Hitam sedang memburu barang siapa yang memicu pilar cahaya Kontrak Dewa tadi malam. Matanya berkilat penuh perhitungan.</p>
+                `
+            },
+            {
+                chapter: 10,
+                title: "Ancaman yang Mengintai di Balik Bayangan",
+                content: `
+                    <p>Di puncak menara tertinggi istana kerajaan, seorang pria berjubah serba hitam menatap bola kristal. Matanya menyipit penuh kecurigaan dan nafsu kekuasaan.</p>
+                    <p>"Kontrak Dewa telah terikat... Cari siapa pemegang segil itu, hidup atau mati!" perintahnya pada para pembunuh bayangan.</p>
+                    <p>Carroline berdiri memandang horizon kota. Mengelus kepala Fenrir dengan senyuman tipis yang dingin, ia siap menghadapi ancaman apa pun di masa depan.</p>
+                `
+            }
+        ];
+
+        // DATA CERITA SEASON 2
+        const storyDataSeason2 = [
+            {
+                chapter: 11,
+                title: "Jejak di Kota Oase",
+                content: `
+                    <p>Season 2 dimulai di tengah keramaian Kota Oase. Carroline melangkah anggun menyusuri jalanan berbatu, dengan Fenrir bersembunyi dengan nyaman di balik mantel tebalnya. Wajahnya yang dingin tak memperlihatkan kekhawatiran meski kota ini dipenuhi poster buronan yang memuat sketsa siluet mereka.</p>
+                    <p>"Mereka bergerak lebih cepat dari yang kubayangkan," bisik Carroline. Sifat pemberaninya mendorongnya untuk tidak melarikan diri, melainkan justru mendekati pusat informasi terbesar di kota itu: Guild Petualang Bintang Emas.</p>
+                `
+            },
+            {
+                chapter: 12,
+                title: "Pintu Rahasia Guild Petualang",
+                content: `
+                    <p>Untuk bisa masuk ke dalam ruangan tertutup Guild tanpa terdeteksi oleh mata-mata Guild Bayangan Hitam, Carroline harus mengaktifkan gerbang sihir teleportasi tersembunyi di balik dinding kedai tua.</p>
+                    <p>Susun urutan Lingkaran Sihir Teleportasi agar gerbang rahasia terbuka!</p>
+                `,
+                hasMinigame: 's2_teleport_puzzle'
+            },
+            {
+                chapter: 13,
+                title: "Investigasi di Kedai Remang",
+                content: `
+                    <p>Setelah berhasil menembus gerbang rahasia, Carroline duduk di sudut kedai mengamati para pembunuh bayangan yang menyamar. Ia menyebarkan aura sensor dari Kitab Dewa untuk mendeteksi siapa pimpinan pergerakan ini.</p>
+                    <p>Pilih titik lokasi investigasi untuk menemukan dokumen rahasia musuh:</p>
+                `,
+                hasMinigame: 's2_investigation'
+            },
+            {
+                chapter: 14,
+                title: "Penyergapan di Lorong Bintang",
+                content: `
+                    <p>Dokumen berhasil didapatkan, namun keberadaan Carroline terendus! Tiga orang pembunuh bayangan bersenjata belati sihir mengepungnya di Lorong Bintang yang sepi.</p>
+                    <p>"Serahkan Kitab Dewa dan serigala itu jika ingin nyawamu selamat!" gertak salah satu pembunuh. Carroline hanya tersenyum dingin. Fenrir melompat ke depan, tubuhnya membesar seketika menjadi serigala raksasa dengan aura ungu membara.</p>
+                `
+            },
+            {
+                chapter: 15,
+                title: "Pemicu Kekuatan Fenrir",
+                content: `
+                    <p>Komandan Pembunuh Bayangan melancarkan serangan tebasan angin hitam berkecepatan tinggi secara mendadak ke arah Carroline!</p>
+                    <p>Bantu Carroline mengaktifkan Perisai Segil Bayangan tepat waktu untuk menahan tebasan musuh!</p>
+                `,
+                hasMinigame: 's2_qte_shield'
+            },
+            {
+                chapter: 16,
+                title: "Pertarungan Melawan Komandan Bayangan",
+                content: `
+                    <p>Perisai berhasil menahan serangan! Kini giliran Carroline dan Fenrir melakukan serangan balik untuk menumbangkan Komandan Pembunuh Bayangan dan menyelesaikan krisis di Kota Oase!</p>
+                `,
+                hasMinigame: 's2_boss_battle'
+            }
+        ];
+
+        // DATA CERITA SEASON 3 (TAMAT - 8 BAB)
+        const storyDataSeason3 = [
+            {
+                chapter: 17,
+                title: "Bangkitnya Kegelapan Purba",
+                content: `
+                    <p>Kekalahan Komandan Bayangan rupanya hanyalah awal. Di dasar Istana Lembah Bayangan, Raja Bayangan mengekstraksi energi kegelapan tua untuk menghancurkan batas dimensi. Langit di atas Kerajaan berubah menjadi merah kehitaman.</p>
+                    <p>Carroline menatap langit yang retak dengan tatapan tenang namun dingin. "Waktunya telah tiba, Fenrir. Kita tidak akan membiarkan tempat ini hancur." Fenrir meraung menggetarkan tanah, menyambut pertarungan akhir mereka.</p>
+                `
+            },
+            {
+                chapter: 18,
+                title: "Menuju Lembah Bayangan Murni",
+                content: `
+                    <p>Untuk mencapai istana musuh, Carroline harus menyeberangi Lembah Bayangan Murni yang dilindungi barikade energi hampa. Kitab Dewa bersinar semakin terang, menandakan kunci segil akhir tersembunyi di sini.</p>
+                    <p>Bantu Carroline mengurai Rune Segil Dewa Penuh untuk membuka jalan tembus!</p>
+                `,
+                hasMinigame: 's3_rune_gate'
+            },
+            {
+                chapter: 19,
+                title: "Bentrokan di Gerbang Gerhana",
+                content: `
+                    <p>Di depan Gerbang Gerhana, benteng pertahanan terakhir musuh dipenuhi ribuan prajurit tengkorak sihir. Sifat berani Carroline terpancar. Ia memandu Fenrir melintasi medan perang bagai kilat ungu.</p>
+                    <p>"Fenrir, buka jalan!" seru Carroline. Dengan satu kepakan sayap kristalnya, badai angin ungu menyapu habis barisan depan musuh dalam hitungan detik.</p>
+                `
+            },
+            {
+                chapter: 20,
+                title: "Penyatuan Jiwa dan Mana Dewa",
+                content: `
+                    <p>Di dalam koridor utama istana, aura kegelapan sangat pekat hingga menekan napas. Untuk bertahan, Carroline melakukan ritual Penyatuan Jiwa Sempurna dengan Fenrir, menyatukan Mana Dewa mereka secara utuh.</p>
+                    <p>Lakukan tap cepat untuk menyelaraskan frekuensi Mana Carroline dan Fenrir!</p>
+                `,
+                hasMinigame: 's3_qte_fusion'
+            },
+            {
+                chapter: 21,
+                title: "Wajah di Balik Takhta",
+                content: `
+                    <p>Pintu aula takhta terbuka. Di atas takhta batu hitam, berdirilah Sang Raja Bayangan. Matanya merah menyala penuh kebencian. "Gadis dari dunia luar... Kau berani mencampuri urusan keabadianku!"</p>
+                    <p>Carroline melangkah maju tanpa rasa takut sedikit pun. "Keabadianmu dibangun atas penderitaan makhluk lain. Cerita itu berakhir di sini."</p>
+                `
+            },
+            {
+                chapter: 22,
+                title: "Evokasi Bentuk Sejati Fenrir",
+                content: `
+                    <p>Raja Bayangan memanggil Naga Hampa Raksasa. Tekanan udaranya dahsyat! Carroline mengangkat Kitab Dewa dan memanggil evokasi penuh Fenrir menjadi Serigala Dewa Interdimensional Bersayap Kristal Cahaya.</p>
+                    <p>Pilih aksi evokasi sihir tepat untuk menetralisir racun kegelapan naga hampa!</p>
+                `,
+                hasMinigame: 's3_evokasi_choice'
+            },
+            {
+                chapter: 23,
+                title: "Pertempuran Puncak: Garis Takdir Akhir",
+                content: `
+                    <p>Raja Bayangan sendiri yang turun ke medan tempur dengan pedang gerhana di tangannya. Pertempuran terdahsyat dalam sejarah Kerajaan pun pecah!</p>
+                    <p>Gunakan gabungan sihir Carroline dan taring Fenrir untuk mengalahkan Raja Bayangan!</p>
+                `,
+                hasMinigame: 's3_final_boss'
+            },
+            {
+                chapter: 24,
+                title: "Awal yang Baru (Tamat)",
+                content: `
+                    <p>Raja Bayangan hancur menjadi debu cahaya, dan langit merah kelam perlahan berganti menjadi biru cerah yang penuh kedamaian. Seluruh Kerajaan bersorak merayakan penyelamat mereka.</p>
+                    <p>Carroline berdiri di puncak tebing istana, memandangi indah peninggalan dunia fantasy ini. Fenrir bersandar lembut di sisinya. Meski ia bisa saja kembali ke dunianya yang membosankan, Carroline memilih tersenyum tipis.</p>
+                    <p>"Dunia ini adalah rumah kita sekarang, Fenrir." Petualangan epik mereka kini telah usai, namun kisah legenda Carroline Sang Ratu Bayangan dan Fenrir akan terukir selamanya dalam sejarah. (TAMAT)</p>
+                `
+            }
+        ];
+
+        let currentSeason = 1;
+        let currentChapter = 1;
+
+        // BGM AUDIO PLAYER
+		let bgmAudio = new Audio('edm3.mp3'); // Ganti 'bgm.mp3' dengan nama file musikmu
+		bgmAudio.loop = true; // Agar musik berputar terus (looping)
+		let isAudioPlaying = false;
+
+		function toggleAudio() {
+			const icon = document.getElementById('audio-icon');
+   
+			if (!isAudioPlaying) {
+				bgmAudio.play().then(() => {
+					isAudioPlaying = true;
+					icon.className = "fa-solid fa-volume-high";
+				}).catch(error => {
+					console.log("Gagal memutar audio:", error);
+				});
+			} else {
+				bgmAudio.pause();
+				isAudioPlaying = false;
+				icon.className = "fa-solid fa-volume-xmark";
+			}
+		}
+
+        // MODAL HANDLERS & FIXES
+        function openStatusModal() { document.getElementById('status-modal').classList.add('active'); }
+        function closeStatusModal() { document.getElementById('status-modal').classList.remove('active'); }
+
+        function openInventoryModal() { document.getElementById('inventory-modal').classList.add('active'); }
+        function closeInventoryModal() { document.getElementById('inventory-modal').classList.remove('active'); }
+
+        function handleModalClick(event, modalId) {
+            if (event.target.id === modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            }
+        }
+
+        // APP SEQUENCE LOADING
+        function startAppSequence() {
+            const screenIntro = document.getElementById('screen-intro');
+            const screenLoading = document.getElementById('screen-loading');
+            const progressFill = document.getElementById('progress-fill');
+
+            setTimeout(() => {
+                screenIntro.style.opacity = '0';
+                setTimeout(() => {
+                    screenIntro.style.display = 'none';
+                    screenLoading.style.opacity = '1';
+                    screenLoading.style.pointerEvents = 'auto';
+
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 10;
+                        progressFill.style.width = progress + '%';
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            setTimeout(() => {
+                                screenLoading.style.opacity = '0';
+                                setTimeout(() => { screenLoading.style.display = 'none'; 
+								}, 1000);
+                            }, 5000);
+                        }
+                    }, 200);
+                }, 1500);
+            }, 5000);
+        }
+
+        function switchSeason(seasonNum) {
+            currentSeason = seasonNum;
+            currentChapter = 1;
+
+            document.getElementById('btn-season-1').classList.toggle('active', seasonNum === 1);
+            document.getElementById('btn-season-2').classList.toggle('active', seasonNum === 2);
+            document.getElementById('btn-season-3').classList.toggle('active', seasonNum === 3);
+
+            populateChapterSelect();
+            renderChapter(currentChapter);
+        }
+
+        function populateChapterSelect() {
+            const selectEl = document.getElementById('chapter-select');
+            selectEl.innerHTML = '';
+            let activeData = storyDataSeason1;
+            if (currentSeason === 2) activeData = storyDataSeason2;
+            if (currentSeason === 3) activeData = storyDataSeason3;
+
+            activeData.forEach((data, index) => {
+                let opt = document.createElement('option');
+                opt.value = index + 1;
+                opt.textContent = `Bab ${data.chapter}: ${data.title}`;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function renderChapter(chapNum) {
+            let activeData = storyDataSeason1;
+            if (currentSeason === 2) activeData = storyDataSeason2;
+            if (currentSeason === 3) activeData = storyDataSeason3;
+
+            const data = activeData[chapNum - 1];
+
+            document.getElementById('chapter-badge').textContent = `Season ${currentSeason} • Bab ${data.chapter}`;
+            document.getElementById('chapter-title').textContent = data.title;
+            document.getElementById('story-content').innerHTML = data.content;
+            document.getElementById('chapter-select').value = chapNum;
+
+            document.getElementById('btn-prev').disabled = (chapNum === 1);
+            document.getElementById('btn-next').disabled = (chapNum === activeData.length);
+
+            // SEASON END BANNER
+            const seasonEndBanner = document.getElementById('season-end');
+            const endTitle = document.getElementById('season-end-title');
+            const endDesc = document.getElementById('season-end-desc');
+
+            if (currentSeason === 1 && chapNum === 10) {
+                seasonEndBanner.style.display = 'block';
+                endTitle.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> BERSAMBUNG KE SEASON 2 <i class="fa-solid fa-wand-magic-sparkles"></i>`;
+                endDesc.textContent = "Kisah Carroline dan Fenrir semakin seru! Klik tombol Season 2 di atas untuk melanjutkan!";
+            } else if (currentSeason === 2 && chapNum === 6) {
+                seasonEndBanner.style.display = 'block';
+                endTitle.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> BERSAMBUNG KE SEASON 3 <i class="fa-solid fa-wand-magic-sparkles"></i>`;
+                endDesc.textContent = "Ancaman kegelapan purba semakin dekat! Klik tombol Season 3 di atas untuk menuju klimaks cerita!";
+            } else if (currentSeason === 3 && chapNum === 8) {
+                seasonEndBanner.style.display = 'block';
+                endTitle.innerHTML = `<i class="fa-solid fa-crown"></i> AKHIR CERITA (TAMAT) <i class="fa-solid fa-crown"></i>`;
+                endDesc.textContent = "Selamat! Kamu telah menyelesaikan seluruh saga Carroline dan Fenrir. Terima kasih telah bermain dan sampai bertemu lagi di cerpen berikutnya!";
+            } else {
+                seasonEndBanner.style.display = 'none';
+            }
+
+            // RENDER MINIGAMES
+            const miniContainer = document.getElementById('minigame-container');
+            miniContainer.innerHTML = '';
+
+            // SEASON 1 MINIGAMES
+            if (data.hasMinigame === 'puzzle_door') renderDoorPuzzle(miniContainer);
+            else if (data.hasMinigame === 'rune_book') renderRunePuzzle(miniContainer);
+            else if (data.hasMinigame === 'qte_ritual') renderQTERitual(miniContainer);
+            else if (data.hasMinigame === 'battle_game') renderBattleGame(miniContainer);
+            // SEASON 2 MINIGAMES
+            else if (data.hasMinigame === 's2_teleport_puzzle') renderS2TeleportPuzzle(miniContainer);
+            else if (data.hasMinigame === 's2_investigation') renderS2Investigation(miniContainer);
+            else if (data.hasMinigame === 's2_qte_shield') renderS2QTEShield(miniContainer);
+            else if (data.hasMinigame === 's2_boss_battle') renderS2BossBattle(miniContainer);
+            // SEASON 3 MINIGAMES
+            else if (data.hasMinigame === 's3_rune_gate') renderS3RuneGate(miniContainer);
+            else if (data.hasMinigame === 's3_qte_fusion') renderS3QTEFusion(miniContainer);
+            else if (data.hasMinigame === 's3_evokasi_choice') renderS3EvokasiChoice(miniContainer);
+            else if (data.hasMinigame === 's3_final_boss') renderS3FinalBoss(miniContainer);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --------------------------------------------------
+           MINIGAMES SEASON 1
+        -------------------------------------------------- */
+        function renderDoorPuzzle(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-key"></i> Puzzle Kode Pintu Gua Kuno</div>
+                    <p class="minigame-desc">Masukkan urutan 3 tombol angka sihir yang benar untuk membuka segil pintu batu gua (Petunjuk: 7 - 3 - 9):</p>
+                    <div id="code-display" style="font-size: 1.5rem; letter-spacing: 5px; color: var(--accent-gold); margin-bottom: 10px;">_ _ _</div>
+                    <div>
+                        <button class="btn-action" onclick="pressCode(7)">7</button>
+                        <button class="btn-action" onclick="pressCode(3)">3</button>
+                        <button class="btn-action" onclick="pressCode(9)">9</button>
+                        <button class="btn-action" onclick="resetCode()" style="border-color:var(--danger-glow);">Reset</button>
+                    </div>
+                </div>
+            `;
+        }
+        let userCode = [];
+        function pressCode(num) {
+            if (userCode.length < 3) userCode.push(num);
+            document.getElementById('code-display').textContent = userCode.join(' ') + ' _'.repeat(3 - userCode.length);
+            if (userCode.length === 3) {
+                if (userCode.join('') === '739') alert('Segil Pintu Gua Terbuka! Lorong Cahaya Terbawa!');
+                else { alert('Kode Salah! Segil Memantulkan Energi.'); resetCode(); }
+            }
+        }
+        function resetCode() { userCode = []; document.getElementById('code-display').textContent = '_ _ _'; }
+
+        function renderRunePuzzle(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-book-skull"></i> Dekode Rune Kitab Dewa</div>
+                    <p class="minigame-desc">Pilih Simbol Rune Elemen yang Tepat untuk Membuka Kunci Kitab:</p>
+                    <button class="btn-action" onclick="checkRune(false)"><i class="fa-solid fa-fire"></i> Rune Api</button>
+                    <button class="btn-action" onclick="checkRune(true)"><i class="fa-solid fa-moon"></i> Rune Bayangan Dewa</button>
+                    <button class="btn-action" onclick="checkRune(false)"><i class="fa-solid fa-bolt"></i> Rune Petir</button>
+                </div>
+            `;
+        }
+        function checkRune(isCorrect) {
+            if (isCorrect) alert('Segil Rune Terbuka! Kitab Kontrak Dewa berhasil dibaca Carroline.');
+            else alert('Rune salah! Mantra tidak terurai.');
+        }
+
+        let qteProgress = 0;
+        function renderQTERitual(container) {
+            qteProgress = 0;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-dharmachakra"></i> Tap Rapidly: Ritual Mana Dewa</div>
+                    <p class="minigame-desc">Tekan tombol di bawah berulang kali untuk mengisi daya Lingkaran Sihir Kontrak!</p>
+                    <div class="hp-bar-bg" style="margin-bottom:15px;"><div id="qte-bar" class="hp-bar-fill" style="width:0%;"></div></div>
+                    <button class="btn-action" onclick="tapMana()"><i class="fa-solid fa-bolt-lightning"></i> SALURKAN MANA!</button>
+                </div>
+            `;
+        }
+        function tapMana() {
+            qteProgress += 20; if (qteProgress > 100) qteProgress = 100;
+            document.getElementById('qte-bar').style.width = qteProgress + '%';
+            if (qteProgress === 100) alert('RITUAL BERHASIL! Fenrir resmi terikat Kontrak Dewa dengan Carroline!');
+        }
+
+        let carrollHP = 100, enemyHP = 100;
+        function renderBattleGame(container) {
+            carrollHP = 100; enemyHP = 100;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-shield-halved"></i> Pertarungan: Carroline & Fenrir VS Beruang Batu</div>
+                    <div class="battle-status-container">
+                        <div class="fighter-card">
+                            <strong>Carroline & Fenrir</strong>
+                            <div class="hp-bar-bg"><div id="player-hp" class="hp-bar-fill"></div></div>
+                        </div>
+                        <div class="fighter-card">
+                            <strong>Beruang Batu</strong>
+                            <div class="hp-bar-bg"><div id="enemy-hp" class="hp-bar-fill hp-bar-enemy"></div></div>
+                        </div>
+                    </div>
+                    <div id="battle-log" class="battle-log">Pertarungan dimulai! Pilih aksi pertempuranmu:</div>
+                    <button class="btn-action" onclick="battleTurn('attack')"><i class="fa-solid fa-paw"></i> Terjangan Fenrir</button>
+                    <button class="btn-action" onclick="battleTurn('magic')"><i class="fa-solid fa-wand-magic"></i> Angin Kegelapan</button>
+                </div>
+            `;
+        }
+        function battleTurn(action) {
+            if (enemyHP <= 0 || carrollHP <= 0) return;
+            let log = document.getElementById('battle-log');
+            let pDmg = action === 'attack' ? Math.floor(Math.random()*20)+20 : Math.floor(Math.random()*30)+15;
+            enemyHP -= pDmg; if (enemyHP < 0) enemyHP = 0;
+            document.getElementById('enemy-hp').style.width = enemyHP + '%';
+            log.innerHTML += `<br>Fenrir menyerang! Memberikan ${pDmg} DMG ke Beruang Batu.`;
+
+            if (enemyHP <= 0) { log.innerHTML += `<br><strong style="color:var(--accent-gold);">KEMENANGAN! Beruang batu terlempar hancur!</strong>`; return; }
+
+            let eDmg = Math.floor(Math.random()*15)+5;
+            carrollHP -= eDmg; if (carrollHP < 0) carrollHP = 0;
+            document.getElementById('player-hp').style.width = carrollHP + '%';
+            log.innerHTML += `<br>Beruang Batu membalas! Memberikan ${eDmg} DMG.`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        /* --------------------------------------------------
+           MINIGAMES SEASON 2
+        -------------------------------------------------- */
+        function renderS2TeleportPuzzle(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-circle-nodes"></i> Sandi Teleportasi Guild</div>
+                    <p class="minigame-desc">Pilih pola urutan elemen sihir yang tepat untuk mengaktifkan Gerbang Teleportasi:</p>
+                    <button class="btn-action" onclick="checkTeleport(false)">Api - Air - Angin</button>
+                    <button class="btn-action" onclick="checkTeleport(true)">Bayangan - Cahaya - Segil Dewa</button>
+                    <button class="btn-action" onclick="checkTeleport(false)">Petir - Tanah - Es</button>
+                </div>
+            `;
+        }
+        function checkTeleport(isCorrect) {
+            if (isCorrect) alert('Gerbang Teleportasi Aktif! Carroline berhasil masuk ke Markas Rahasia.');
+            else alert('Kombinasi salah! Lingkaran sihir memunculkan asap tebal.');
+        }
+
+        function renderS2Investigation(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-magnifying-glass"></i> Investigasi Informasi Rahasia</div>
+                    <p class="minigame-desc">Periksa salah satu sudut kedai untuk menemukan dokumen pergerakan musuh:</p>
+                    <button class="btn-action" onclick="investigatePoint(1)"><i class="fa-solid fa-chair"></i> Meja Pembunuh Bayangan</button>
+                    <button class="btn-action" onclick="investigatePoint(2)"><i class="fa-solid fa-wine-glass"></i> Area Bar Utama</button>
+                    <button class="btn-action" onclick="investigatePoint(3)"><i class="fa-solid fa-box"></i> Peti Kayu Belakang</button>
+                    <div id="investigate-result" style="margin-top:10px; font-weight:600; color:var(--accent-gold);"></div>
+                </div>
+            `;
+        }
+        function investigatePoint(point) {
+            const res = document.getElementById('investigate-result');
+            if (point === 1) res.textContent = 'BERHASIL! Carroline mengambil surat perintah dari kantong pembunuh yang sedang lengah.';
+            else if (point === 2) res.textContent = 'Hanya ada deretan minuman tua. Tidak ada petunjuk di sini.';
+            else res.textContent = 'Peti ini kosong dan berdebu.';
+        }
+
+        let shieldProgress = 0;
+        function renderS2QTEShield(container) {
+            shieldProgress = 0;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-shield-virus"></i> Tap Quick: Aktifkan Perisai Segil</div>
+                    <p class="minigame-desc">Tekan secepat mungkin sebelum tebasan hitam mengenai Carroline!</p>
+                    <div class="hp-bar-bg" style="margin-bottom:15px;"><div id="shield-bar" class="hp-bar-fill" style="width:0%; background: linear-gradient(90deg, #a855f7, #fbbf24);"></div></div>
+                    <button class="btn-action" onclick="tapShield()"><i class="fa-solid fa-hand-holding-hand"></i> BANGKITKAN PERISAI!</button>
+                </div>
+            `;
+        }
+        function tapShield() {
+            shieldProgress += 25; if (shieldProgress > 100) shieldProgress = 100;
+            document.getElementById('shield-bar').style.width = shieldProgress + '%';
+            if (shieldProgress === 100) alert('PERISAI SEMPURNA! Tebasan hitam musuh terpental tanpa menyentuh Carroline!');
+        }
+
+        let bossCarrollHP = 120, bossHP = 150;
+        function renderS2BossBattle(container) {
+            bossCarrollHP = 120; bossHP = 150;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-skull-crossbones"></i> BOSS BATTLE: VS Komandan Bayangan</div>
+                    <div class="battle-status-container">
+                        <div class="fighter-card">
+                            <strong>Carroline & Fenrir</strong>
+                            <div class="hp-bar-bg"><div id="s2-player-hp" class="hp-bar-fill"></div></div>
+                        </div>
+                        <div class="fighter-card">
+                            <strong>Komandan Bayangan</strong>
+                            <div class="hp-bar-bg"><div id="s2-boss-hp" class="hp-bar-fill hp-bar-enemy"></div></div>
+                        </div>
+                    </div>
+                    <div id="s2-battle-log" class="battle-log">Pertarungan Puncak Season 2 Dimulai!</div>
+                    <button class="btn-action" onclick="s2BossTurn('dark_claw')"><i class="fa-solid fa-paw"></i> Cakar Bayangan</button>
+                    <button class="btn-action" onclick="s2BossTurn('crystal_wings')"><i class="fa-solid fa-feather-pointed"></i> Sayap Kristal</button>
+                </div>
+            `;
+        }
+        function s2BossTurn(action) {
+            if (bossHP <= 0 || bossCarrollHP <= 0) return;
+            let log = document.getElementById('s2-battle-log');
+            let pDmg = action === 'dark_claw' ? Math.floor(Math.random()*25)+25 : Math.floor(Math.random()*35)+20;
+            bossHP -= pDmg; if (bossHP < 0) bossHP = 0;
+            document.getElementById('s2-boss-hp').style.width = (bossHP / 150 * 100) + '%';
+            log.innerHTML += `<br>Serangan ${action === 'dark_claw' ? 'Cakar' : 'Sayap Kristal'} menembus armor Komandan! (${pDmg} DMG)`;
+
+            if (bossHP <= 0) { log.innerHTML += `<br><strong style="color:var(--accent-gold);">KEMENANGAN MUTLAK! Komandan Bayangan berhasil dikalahkan!</strong>`; return; }
+
+            let eDmg = Math.floor(Math.random()*20)+10;
+            bossCarrollHP -= eDmg; if (bossCarrollHP < 0) bossCarrollHP = 0;
+            document.getElementById('s2-player-hp').style.width = (bossCarrollHP / 120 * 100) + '%';
+            log.innerHTML += `<br>Komandan membalas dengan Belati Sihir! (${eDmg} DMG)`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        /* --------------------------------------------------
+           MINIGAMES SEASON 3 (NEW!)
+        -------------------------------------------------- */
+        // MINIGAME S3 BAB 2: RUNE GATE
+        function renderS3RuneGate(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-torii-gate"></i> Segil Rune Barikade Lembah</div>
+                    <p class="minigame-desc">Pilih urutan segil murni untuk memecahkan benteng aura hampa:</p>
+                    <button class="btn-action" onclick="checkS3Gate(false)">Rune Kegelapan Murni</button>
+                    <button class="btn-action" onclick="checkS3Gate(true)">Rune Jiwa Dewa Terang</button>
+                    <button class="btn-action" onclick="checkS3Gate(false)">Rune Penghancur Es</button>
+                </div>
+            `;
+        }
+        function checkS3Gate(isCorrect) {
+            if (isCorrect) alert('Barikade Lembah hancur! Jalan menuju Istana Bayangan terbuka lebar!');
+            else alert('Segil memantul! Efek dorongan sihir mengenai Fenrir.');
+        }
+
+        // MINIGAME S3 BAB 4: QTE FUSION
+        let fusionProgress = 0;
+        function renderS3QTEFusion(container) {
+            fusionProgress = 0;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-atom"></i> QTE: Penyatuan Jiwa Dewa</div>
+                    <p class="minigame-desc">Tap cepat untuk menyeimbangkan frekuensi Mana Carroline & Fenrir!</p>
+                    <div class="hp-bar-bg" style="margin-bottom:15px;"><div id="fusion-bar" class="hp-bar-fill" style="width:0%; background: linear-gradient(90deg, #6366f1, #fbbf24);"></div></div>
+                    <button class="btn-action" onclick="tapFusion()"><i class="fa-solid fa-infinity"></i> SINKRONKAN MANA!</button>
+                </div>
+            `;
+        }
+        function tapFusion() {
+            fusionProgress += 20; if (fusionProgress > 100) fusionProgress = 100;
+            document.getElementById('fusion-bar').style.width = fusionProgress + '%';
+            if (fusionProgress === 100) alert('SINKRONISASI 100%! Aura Dewa Tersebar di Sekeliling Carroline!');
+        }
+
+        // MINIGAME S3 BAB 6: EVOKASI CHOICE
+        function renderS3EvokasiChoice(container) {
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-burst"></i> Evokasi Sihir Sayap Kristal</div>
+                    <p class="minigame-desc">Pilih wujud serangan sihir Fenrir untuk menembus kulit naga hampa:</p>
+                    <button class="btn-action" onclick="checkEvokasi(true)"><i class="fa-solid fa-wand-magic-sparkles"></i> Tebasan Kristal Cahaya Murni</button>
+                    <button class="btn-action" onclick="checkEvokasi(false)"><i class="fa-solid fa-fire-flame-curved"></i> Semburan Api Hampa</button>
+                </div>
+            `;
+        }
+        function checkEvokasi(isCorrect) {
+            if (isCorrect) alert('Naga Hampa meraung hancur menjadi serpihan kristal!');
+            else alert('Serangan tidak mempan terhadap perisai hampa musuh!');
+        }
+
+        // MINIGAME S3 BAB 7: FINAL BOSS BATTLE
+        let finalPlayerHP = 200, finalBossHP = 250;
+        function renderS3FinalBoss(container) {
+            finalPlayerHP = 200; finalBossHP = 250;
+            container.innerHTML = `
+                <div class="minigame-box">
+                    <div class="minigame-title"><i class="fa-solid fa-crown"></i> FINAL BOSS: VS Raja Bayangan</div>
+                    <div class="battle-status-container">
+                        <div class="fighter-card">
+                            <strong>Carroline & Fenrir Dewa</strong>
+                            <div class="hp-bar-bg"><div id="s3-player-hp" class="hp-bar-fill"></div></div>
+                        </div>
+                        <div class="fighter-card">
+                            <strong>Raja Bayangan Purba</strong>
+                            <div class="hp-bar-bg"><div id="s3-boss-hp" class="hp-bar-fill hp-bar-enemy"></div></div>
+                        </div>
+                    </div>
+                    <div id="s3-battle-log" class="battle-log">Pertempuran Akhir Menentukan Nasib Dunia!</div>
+                    <button class="btn-action" onclick="s3BossTurn('god_slash')"><i class="fa-solid fa-spaghetti-monster-flying"></i> Tebasan Segil Dewa</button>
+                    <button class="btn-action" onclick="s3BossTurn('light_burst')"><i class="fa-solid fa-sun"></i> Ledakan Cahaya Abadi</button>
+                </div>
+            `;
+        }
+        function s3BossTurn(action) {
+            if (finalBossHP <= 0 || finalPlayerHP <= 0) return;
+            let log = document.getElementById('s3-battle-log');
+            let pDmg = action === 'god_slash' ? Math.floor(Math.random()*40)+30 : Math.floor(Math.random()*50)+25;
+            finalBossHP -= pDmg; if (finalBossHP < 0) finalBossHP = 0;
+            document.getElementById('s3-boss-hp').style.width = (finalBossHP / 250 * 100) + '%';
+            log.innerHTML += `<br>Kekuatan Dewa Carroline & Fenrir menghantam Raja Bayangan! (${pDmg} DMG)`;
+
+            if (finalBossHP <= 0) { log.innerHTML += `<br><strong style="color:var(--accent-gold);">KEMENANGAN AKHIR! Raja Bayangan Musnah Selamanya!</strong>`; return; }
+
+            let eDmg = Math.floor(Math.random()*25)+15;
+            finalPlayerHP -= eDmg; if (finalPlayerHP < 0) finalPlayerHP = 0;
+            document.getElementById('s3-player-hp').style.width = (finalPlayerHP / 200 * 100) + '%';
+            log.innerHTML += `<br>Raja Bayangan membalas dengan Pedang Gerhana! (${eDmg} DMG)`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function changeChapter(direction) {
+            let activeData = storyDataSeason1;
+            if (currentSeason === 2) activeData = storyDataSeason2;
+            if (currentSeason === 3) activeData = storyDataSeason3;
+
+            let target = currentChapter + direction;
+            if (target >= 1 && target <= activeData.length) {
+                currentChapter = target;
+                renderChapter(currentChapter);
+            }
+        }
+
+        function jumpToChapter(chapNum) {
+            currentChapter = parseInt(chapNum);
+            renderChapter(currentChapter);
+        }
+
+        // PARTICLES ANIMATION
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * -0.6 - 0.2;
+                this.color = `rgba(168, 85, 247, ${Math.random() * 0.6 + 0.2})`;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+            }
+            draw() {
+                ctx.fillStyle = this.color; ctx.shadowBlur = 8; ctx.shadowColor = "#a855f7";
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function createParticles() {
+            particlesArray = [];
+            let count = Math.floor(window.innerWidth / 15);
+            for (let i = 0; i < count; i++) particlesArray.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.onload = () => {
+            populateChapterSelect();
+            renderChapter(currentChapter);
+            createParticles();
+            animateParticles();
+            startAppSequence();
+        };
+    </script>
+</body>
+</html>
